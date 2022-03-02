@@ -69,8 +69,33 @@ Importer.
 
 **¿Conceptos Clave de las PWA??**
 
+**Service Worker**
+- Es un pequeño proxy que esta entre nuestra pagina web y el WWW
+- Es un arhivo JS plano 
+- Cuando nuestra pagina realiza una petición a la WWW pasa por nustro archivo JS (Service Worker) y decide lo que podemos realizar con conexión o sin conexion 
+- Debe estar siempre bajo un protocolo HTTPS
+- Forma Operacional -> si nos conectamos a la web pasa por el **service worker**  esta valida si existe el elemento en su localstorage si existe la muestra en la web si no se conecta a la web la baja la guarda en local y la muestra. 
+- El service worker inicia con el `navigator.serviceWirker.register(/sw.js)`
+- El **SW** Corre en hilos independientes si cierras tu pagina que estas consultando este no se termina sigue escuchando para estar listo de nuevo para tu web 
+- Ciclo de Vida, Instalando -> Instalado -> Activación -> activado -> Ocioso 
+![SW](./info/ciclo_sw.png)
+
+- Paso Instalando: Se descarga el archivo JS, el JS es parseado o revisado paso al siguiente paso 
+- Paso Instalado: Se conoce como waiting, Se movera el siguiente paso si no existe algun SW ejecutandose en caso que exista otro SW ejecutandose el solo esperará que todos los tab esten cerrados para ejecutarse
+- Paso Activación: susede antes que el SW  tome el control de nuestra aplicación, aqui podemos hacer alguna limpieza en caso que se necesite.
+- Paso activado: Cuando esta activo aqui el SW tiene control absoluto de nuestra aplicación we, control total de lo que deseamos hacer. 
+- Paso Ocioso: esto es cuando falla la instalación ó es reemplazado por otro SW, ya no hay control de la aplicación, solo esta esperando para ser destruido. 
 
 ## Sección 3: Reforzamiento Promesas, Fetch API y HttpServer
 
-
+**Puntos**
+- Promesas
+- Promesas en cadena
+- Promise.all
+- Promise.race
+- Fetch API
+- Gets
+- Posts
+- Fetch de Blobs
+- http-server
 
