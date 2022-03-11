@@ -99,3 +99,28 @@ Importer.
 - Fetch de Blobs
 - http-server
 
+### Clase 13 REforzamiento Promesas, Fetch API y Httserver 
+
+Podemos instalar `npm install http-server -g` para que podamos ejecutar en un server pero podemos usar Go Live un plugin de visual 
+
+>PD : 
+
+- Para generar una promesa 
+```
+const sumar =( num)=>{
+
+    var promesa = new Promise( (resolve, reject)=>{
+            setTimeout(() => {
+                resolve(num + 1 );  
+            }, 800);
+   });
+
+   return promesa;
+}
+
+sumar(9).then( (nuevoNumero)=>{
+    console.log(nuevoNumero);
+} ); // has esto cuando la promesa termine, no dispara la promesa  
+```
+
+
