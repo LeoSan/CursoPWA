@@ -146,5 +146,6 @@ sumar(3).then( sumar )
          console.log(`Error:>`, error);   
         });
 ```
-
+https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Promise/race
+https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Promise/all
 
