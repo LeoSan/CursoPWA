@@ -99,7 +99,7 @@ Importer.
 - Fetch de Blobs
 - http-server
 
-### Clase 13 REforzamiento Promesas, Fetch API y Httserver 
+### Clase 13 Reforzamiento Promesas, Fetch API y Httserver 
 
 Podemos instalar `npm install http-server -g` para que podamos ejecutar en un server pero podemos usar Go Live un plugin de visual 
 
@@ -148,4 +148,20 @@ sumar(3).then( sumar )
 ```
 https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Promise/race
 https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Promise/all
+
+## Sección 3: Origenes del Fetch Clase 22
+
+
+**Petición Fetch Nueva **
+```
+
+fetch('https://reqres.in/api/users')
+	.then(resp=>{
+	//Esto es una promesa tambien
+	let valor = resp.json().then();
+	console.log(valor);
+});
+
+```
+
 
