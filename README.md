@@ -163,5 +163,46 @@ fetch('https://reqres.in/api/users')
 });
 
 ```
+## Sección 4: Service Worker y Fetch Event 
+
+## Clase 34: Introducción al service worker 
+
+**Que és**
+- Es un mediador que tiene la función de validar todas la peticiones antes de entrar o establecer una conexcion a la web. 
+- Service corre en su backgorund, corre en su propio hilo. 
+- Recuerda a pesar que cierres el navegador el servicewroker siempre queda activo. 
+- Se identifica en el navegador por tener un engranaje como icono
+- Es un archivo normal js, lo diferencia de los demas porque tiene un gran conjunto de eventListener, esta pendiente de sucesos. 
+- Podemos disparar eventos para install, active, push, fetch, sync, message. 
+- Siempre se debe ejecutar en una ruta segura si no, no funciona es decir conexiones HTTPS://
+
+
+
+## Clase 35: Inicio del Proyecto 
+
+**Consejos**
+- Siempre debemos limpiar cache para manejar los service worker
+
+![Usar_ToolDEV_0001](./info/Usar_ToolDEV_0001.png)
+
+
+## Clase 36: Instalacion del Service Worker
+
+**Consejos**
+> Paso 1:
+- Debes usar algun servidor para usar SW, yo ando usando un plugin de Visual Code llamado `Live Server`, pero puedes usar Laragon o otro servidor apache que tengas disponible 
+- Debemos validar que version que navegador web soporta service worker 
+- https://caniuse.com/?search=service%20worker 
+  
+> Paso 2:  
+- Los SW siempre van en la raiz de los proyectos 
+- Podemos referencias nuestro SW de esta manera `navigator.serviceWorker.register('sw.js');`
+- Claro previamente debemos crear nuestro archivo `sw.js` en raiz recuerda en raiz de TU proyecto. 
+- Nota se genera en la raíz ya que con este, le estamos diciendo que tome control absoluto de todos los archivos y carpetas que tienen nuestro proyecto. 
+  
+
+> Paso 3:  
+-
+
 
 
