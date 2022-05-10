@@ -205,4 +205,12 @@ fetch('https://reqres.in/api/users')
 -
 
 
+## Clase 37: Como hacer un escuchador 
+
+```
+ self.addEventListener('fetch', event=>{
+    console.log(event);
+})
+```
+
 
