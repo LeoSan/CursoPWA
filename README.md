@@ -214,3 +214,33 @@ fetch('https://reqres.in/api/users')
 ```
 
 
+
+## Sección 5: Ciclo de vida de un Service Worker y los listeners más comunes
+
+**Temas puntuales de la sección**
+
+
+> Esta sección tiene un resumen de los principales listeners usado dentro de un service worker, mi objetivo es enseñarles cómo y en qué momento son invocados para posteriormente utilizarlos en una aplicación que desarrollaremos que requiere estos conocimientos.
+
+**Entre los listeners más comunes están:**
+
+- fetch
+- sync
+- install
+- activate
+- push
+
+## Clase 47. Service Worker: Install
+
+
+Forma de instalar un SW
+```
+
+// Detectar si podemos usar Service Workers
+if ( navigator.serviceWorker ) {
+    navigator.serviceWorker.register('./sw03.js');
+}
+```
+
+> Nota: Si ves que no jala la instalción cierra el navegaor o abre otro navegador y sigue con la practica
+

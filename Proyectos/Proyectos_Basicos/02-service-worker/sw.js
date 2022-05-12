@@ -38,7 +38,19 @@ const interceptarCSS = (evento)=>{
 }
 
 const voltearImagen = (evento)=>{
+  //Forma de validar tus feth // Traer bring //llevar 
+    evento.respondWith( 
+        fetch('img/main-patas-arribasss.jpg')
+        .then(resp=>{
+            console.log("Resultado->",resp);
+            if (resp.ok){
+                return resp;
+            }else{
+                return fetch('img/main.jpg')
+            }
 
-    evento.respondWith( fetch('img/main-patas-arriba.jpg'));
+        })
+        
+        );
 
 }
