@@ -23,7 +23,7 @@ const instalacion = new Promise((resolve, reject) =>{
     // Siempre resive promesas 
     event.waitUntil(instalacion); 
 
-3});
+});
 
 //Cuando el SQ toma el control de la aplicación.
 //activate
