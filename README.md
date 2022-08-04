@@ -304,3 +304,140 @@ self.addEventListener('sync', event=>{
 });
 
 ```
+## Clases 58: introducción al cache storage 
+
+> El cache es un espacio de disco duro, podremos crear variables y anxar cualquier valor 
+
+
+**Meotodos básicos**
+-  caches.open
+-  caches.has
+-  caches.delete
+-  cache.add
+-  cache.addAll
+-  cache.match
+-  caches.keys
+
+
+**Nota**
+- La funcionalidad `Cache` es propia de windows 
+- La funcionalidad `server worker` es del navegador 
+- Al consultar cache se convierte en una promesa por lo que podemos usar .then 
+- Puedo almacenar imagenes, estilos, js, paginas web. 
+
+
+**Ejemplos**
+
+```
+//Validamos SI EL NAVEGADOR SOPORTA caches 
+if (window.caches){
+    //Asi creamos Cache 
+    console.log("Creando caches");
+    caches.open('prueba-1');
+
+    //Asi valido si existe dicha chache 
+    if (caches.has('prueba-1')){
+        console.log("valido caches");
+        caches.has('prueba-1').then(console.log);
+    }
+
+    //Asi elimino cache
+    console.log("elimino caches"); 
+    caches.delete('prueba-1');
+
+    //Asi agrego  valores a la cache
+    cache.add('../template/404.html');
+
+}
+
+// Crear caches multiples 
+    caches.open('cache-v1.1').then(cache =>{
+        //Tambien es una promesa
+        cache.addAll(
+            ['../template/404.html',
+            '../css/style.css',
+            '../img/offline.gif'
+            ]).then(()=>{
+                //Puedo meter operaciones aqui 
+                caches.delete('../css/style.css');
+                cache.put('../template/404.html', new Response('Hola mundo')); // Asi se remplaza
+            });
+
+            // es otra promesa
+            cache.match('../template/404.html').then(resp =>{
+
+                resp.text().then(console.log);
+            });
+    });
+
+    //Forma de validar que caches existen 
+    //Es un trabajo asincrono
+    caches.keys().then(keys =>{
+
+        console.log(keys);
+    })
+
+```
+http://127.0.0.1:5500/Proyectos/04-cache-offline/
+
+
+## Clases 59. Guardar el APP SHELL a la hora de instalar SW
+
+**APP SHELL**
+> Es un metodo que nos ayuda a validar que se necesita instalar para que tu apalicion pueda trabajar, es algo que deseo cargar rapidanmente 
+
+## Clases 60. Estrategia: Cache Only
+
+> Una ves instanciado el unico cache, la idea es que jamas regrese a consultar algo a la web 
+> Esta es usada cuando toda la aplicación es servida desde el unico cache, no va existir peticion que aceda a la web.  
+
+**Ejemplo**
+```
+//Iniciamos Instaladore 
+self.addEventListener('install', event=>{
+    
+    const cacheProm = caches.open('cache-1').then(cache =>{
+        return cache.addAll([
+            '/'
+            ,'./template/404.html'
+            , './css/style.css'
+            , './img/main.jpg'
+            , 'https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css'
+            , './js/app.js'
+            , './index.html'
+        ]);
+
+    });
+
+    //Debemos esperar que se termine 
+    event.waitUntil(cacheProm);
+
+});
+
+
+//Iniciamos con método fecth
+
+self.addEventListener('fetch', event=>{
+
+
+    //Estrategia del cache 
+    //cache Only 
+    event.respondWith( caches.match( event.request) ); 
+
+    
+});
+
+``` 
+
+## Clases 61. Estrategia: Cache with network fallback
+
+
+**Nota**
+- Esta estrategia es algo complicada ya que si existe unerror 404 validando cache no lo puedo cath con un try 
+
+
+**Ejemplo**
+```
+
+```
+
