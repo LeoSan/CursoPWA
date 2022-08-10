@@ -10,6 +10,8 @@ const CACHE_DYMAMIC_NAME = 'dynamic-v1';
 //Metemos valores que no cambian en el tiempo 
 const CACHE_INMUTABLE_NAME = 'inmutable-v1'; 
 
+const CACHE_DYMAMIC_LIMIT  = '50'; 
+
 
 function limpiarCache( cacheName, numeroItems ){
 
@@ -58,31 +60,23 @@ self.addEventListener('install', event=>{
 
 self.addEventListener('fetch', event=>{
 
-    //Estrategia 
-    // Cache with network fallback
-    const respuesta = caches.match( event.request)
-    .then( resp =>{
-        
-        //Si todo bien
-        if (resp) return resp;
+    if (event.request.url.includes('bootstrap')){
+       return  event.respondWith(caches.match(event.request));
+    }
+    
+    //Estrategia  4- Cache with network update
+    const respuesta = caches.open(CACHE_STATIC_NAME).then(cache => {
 
-        //Si todo mal, debo conectarme a la web 
-        console.log("No Existe", event.request.url);
-
-
-        return fetch( event.request ).then( newResp => {
-            caches.open(CACHE_DYMAMIC_NAME)
-                .then(cache =>{
-                    cache.put( event.request, newResp );
-                    //Buen Lugar para limpiar el cache 
-                    limpiarCache(CACHE_DYMAMIC_NAME, 3);
-            });
-            return newResp.clone();
-
+        fetch(event.request).then( newResp =>{//Hacemos pesto para obtener la ultima version del host 
+            //Aqui actualizó de nuevo la cache con lo que se regesa
+            cache.put(event.request, newResp);
+            
+            return cache.match(event.request);//Se actuliza de nuevo la cache
         });
 
     });
-
+    
+    //Aqui permite pasar nuestra promesa 
     event.respondWith(respuesta);
 
     

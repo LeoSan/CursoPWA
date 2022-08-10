@@ -681,6 +681,79 @@ self.addEventListener('fetch', event=>{
     
 });
 
+```
 
+
+##  64. Estrategia: Network with cache fallback
+
+**Nota**
+- Si usamos dispositivos mobiles siempre siempre va consultar algo de la nube 
+- Es mas lenta por lo que la estrategia pudiera fallar con conexiones 2g 3g 
 
 ```
+self.addEventListener('fetch', event=>{
+
+    //Estrategia  3- Network with cache fallback
+    // Si usamos dispositivos mobiles siempre siempre va consultar algo de la nube 
+    //Es mas lenta por lo que la estrategia pudiera fallar con conexiones 2g 3g 
+   
+   if (!res){
+        return caches.match(event.request);//Esto es como un ultimo recurso 
+   }
+    const respuesta = fetch(event.request).then(res =>{
+
+        caches.open(CACHE_DYMAMIC_NAME)
+            .then(cache => {
+                    cache.put(event.request, res);
+                    limpiarCache(CACHE_DYMAMIC_NAME, CACHE_DYMAMIC_LIMIT);
+            });
+
+        return res.clone();
+
+    }).catch(err=>{
+        return caches.match(event.request);
+    });
+    
+    //Aqui permite pasar nuestra promesa 
+    event.respondWith(respuesta);
+
+    
+});
+```
+
+##  65. Estrategia: Cache with network update
+
+**Nota**
+- Se usa cuando necesitamos un rendimiento exigente 
+- Nuestra app estara un paso atras de la versio original 
+- En esta estrategia se supone que toda la información existe en la cache no se tiene nunguna cache que sea dinamica
+- Se retorna el producto obtenido en se actualiza la cache 
+
+```
+self.addEventListener('fetch', event=>{
+
+    if (event.request.url.includes('bootstrap')){
+       return  event.respondWith(caches.match(event.request));
+    }
+    
+    //Estrategia  4- Cache with network update
+    const respuesta = caches.open(CACHE_STATIC_NAME).then(cache => {
+
+        fetch(event.request).then( newResp =>{//Hacemos pesto para obtener la ultima version del host 
+            //Aqui actualizó de nuevo la cache con lo que se regesa
+            cache.put(event.request, newResp);
+            
+            return cache.match(event.request);//Se actuliza de nuevo la cache
+        });
+
+    });
+    
+    //Aqui permite pasar nuestra promesa 
+    event.respondWith(respuesta);
+
+    
+});
+
+```
+
+
