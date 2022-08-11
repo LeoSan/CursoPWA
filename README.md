@@ -757,3 +757,53 @@ self.addEventListener('fetch', event=>{
 ```
 
 
+##  66. Estrategia: Cache & Network Race 
+
+**Nota**
+- Es una competencia para ver cual de los dos responde primero 
+- Es para aquellos dispositivos que tenga un procesamiento de cache lento pero una velocidad de internet rapida 
+- Es para darle al usuario la mas alta velocidad de respuesta en estas peticiones 
+
+```
+self.addEventListener('fetch', event=>{
+
+    const respuesta = new Promise( (resolve, reject)=>{
+        let rechazada = false; 
+
+        const falloUnaVez = ()=>{
+            if (rechazada){
+                //No existe en el cache ni una respuesta valida  
+                if (/\.(png|jpg)$/i.test(event.request) ){
+                    //si entra a este codnicional debo retornar una imagen 
+                    resolve(caches.match('./Proyectos/04-cache-offline/img/no-image.jpg'));
+                }else{
+                    //Podemos crear y decir que esta pagina web no se encontro
+                    reject('No se encontro respuesta');
+                }
+            }else{
+                rechazada = true;
+            }
+
+        };
+
+        fetch(event.request).then( resp=>{
+            //Recuerda que el fetch puede fallar por el 404 
+            resp.ok ? resolve(resp): falloUnaVez();
+
+        }).catch(error=>{
+            falloUnaVez();
+        });
+
+        caches.match(event.request).then(resp =>{
+
+            resp ? resolve(resp) : falloUnaVez();
+        
+        }).catch(falloUnaVez);
+
+    });
+    
+    //Aqui permite pasar nuestra promesa 
+    event.respondWith(respuesta);
+    
+});
+```

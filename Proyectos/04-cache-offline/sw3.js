@@ -43,7 +43,8 @@ self.addEventListener('install', event=>{
             './css/style.css',
             './img/main.jpg',
             './js/app.js',
-            './index.html'
+            './index.html',
+            './img/no-img.jpg'
         ]);
 
     });
@@ -60,25 +61,43 @@ self.addEventListener('install', event=>{
 
 self.addEventListener('fetch', event=>{
 
-    if (event.request.url.includes('bootstrap')){
-       return  event.respondWith(caches.match(event.request));
-    }
-    
-    //Estrategia  4- Cache with network update
-    const respuesta = caches.open(CACHE_STATIC_NAME).then(cache => {
+    const respuesta = new Promise( (resolve, reject)=>{
+        let rechazada = false; 
 
-        fetch(event.request).then( newResp =>{//Hacemos pesto para obtener la ultima version del host 
-            //Aqui actualizó de nuevo la cache con lo que se regesa
-            cache.put(event.request, newResp);
-            
-            return cache.match(event.request);//Se actuliza de nuevo la cache
+        const falloUnaVez = ()=>{
+            if (rechazada){
+                //No existe en el cache ni una respuesta valida  
+                if (/\.(png|jpg)$/i.test(event.request) ){
+                    //si entra a este codnicional debo retornar una imagen 
+                    resolve(caches.match('./Proyectos/04-cache-offline/img/no-image.jpg'));
+                }else{
+                    //Podemos crear y decir que esta pagina web no se encontro
+                    reject('No se encontro respuesta');
+                }
+            }else{
+                rechazada = true;
+            }
+
+        };
+
+        fetch(event.request).then( resp=>{
+            //Recuerda que el fetch puede fallar por el 404 
+            resp.ok ? resolve(resp): falloUnaVez();
+
+        }).catch(error=>{
+            falloUnaVez();
         });
+
+        caches.match(event.request).then(resp =>{
+
+            resp ? resolve(resp) : falloUnaVez();
+        
+        }).catch(falloUnaVez);
 
     });
     
     //Aqui permite pasar nuestra promesa 
     event.respondWith(respuesta);
-
     
 });
 
