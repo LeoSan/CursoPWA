@@ -1,17 +1,12 @@
-
+//Estrategia Final 
 //Declaro variables
-
 //Metemos las variables que son corazon de nuestra aplicación y solo se usa cuando se instala wl ws
-const CACHE_STATIC_NAME = 'static-v2'; 
-
+const CACHE_STATIC_NAME = 'static-v3'; 
 //Metemos valores que cambian de forma muy recurrente, puede crecer mucho por eso lo separamos
-const CACHE_DYMAMIC_NAME = 'dynamic-v1'; 
-
+const CACHE_DYNAMIC_NAME = 'dynamic-v1'; 
 //Metemos valores que no cambian en el tiempo 
 const CACHE_INMUTABLE_NAME = 'inmutable-v1'; 
-
 const CACHE_DYMAMIC_LIMIT  = '50'; 
-
 
 function limpiarCache( cacheName, numeroItems ){
 
@@ -31,20 +26,21 @@ function limpiarCache( cacheName, numeroItems ){
 
 }
 
-//Iniciamos Instaladore 
+//Evento Instalador
 self.addEventListener('install', event=>{
     
     const cacheProm = caches.open(CACHE_STATIC_NAME)
     .then(cache =>{
        
         return cache.addAll([
-            '/',
+            './',
             './template/404.html',
             './css/style.css',
             './img/main.jpg',
             './js/app.js',
             './index.html',
-            './img/no-img.jpg'
+            './img/no-img.jpg',
+            './pages/offline.html',
         ]);
 
     });
@@ -56,48 +52,53 @@ self.addEventListener('install', event=>{
 
 });
 
+//Evento de Activación 
+self.addEventListener('activate', e=>{
 
-//Iniciamos con método fecth
-
-self.addEventListener('fetch', event=>{
-
-    const respuesta = new Promise( (resolve, reject)=>{
-        let rechazada = false; 
-
-        const falloUnaVez = ()=>{
-            if (rechazada){
-                //No existe en el cache ni una respuesta valida  
-                if (/\.(png|jpg)$/i.test(event.request) ){
-                    //si entra a este codnicional debo retornar una imagen 
-                    resolve(caches.match('./Proyectos/04-cache-offline/img/no-image.jpg'));
-                }else{
-                    //Podemos crear y decir que esta pagina web no se encontro
-                    reject('No se encontro respuesta');
-                }
-            }else{
-                rechazada = true;
+   const respuesta =  caches.keys().then(keys =>{
+        keys.forEach(key => {
+            if (key !== CACHE_STATIC_NAME && key.includes('static')){
+                return caches.delete(key);
             }
-
-        };
-
-        fetch(event.request).then( resp=>{
-            //Recuerda que el fetch puede fallar por el 404 
-            resp.ok ? resolve(resp): falloUnaVez();
-
-        }).catch(error=>{
-            falloUnaVez();
+                
         });
-
-        caches.match(event.request).then(resp =>{
-
-            resp ? resolve(resp) : falloUnaVez();
-        
-        }).catch(falloUnaVez);
-
     });
     
-    //Aqui permite pasar nuestra promesa 
-    event.respondWith(respuesta);
+    //const respuesta = new Promise
+    e.waitUntil( respuesta );
+});
+
+
+//Iniciamos con Estrategia 2
+self.addEventListener('fetch', e=>{
+
+    // 2- Cache with Network Fallback
+    const respuesta = caches.match( e.request )
+         .then( res => {
+
+             if ( res ) return res;
+
+             // No existe el archivo
+             // tengo que ir a la web
+             return fetch( e.request ).then( newResp => {
+
+                 caches.open( CACHE_DYNAMIC_NAME )
+                     .then( cache => {
+                         cache.put( e.request, newResp );
+                         limpiarCache( CACHE_DYNAMIC_NAME, CACHE_DYMAMIC_LIMIT );
+                     });
+
+                 return newResp.clone();
+             });
+         }).catch(err =>{
+
+            if (e.request.headers.get('accept').includes('text/html')){
+
+                return caches.match('./pages/offline.html');
+            }
+
+         });
+     e.respondWith( respuesta );
     
 });
 

@@ -807,3 +807,13 @@ self.addEventListener('fetch', event=>{
     
 });
 ```
+
+##  67 y 68 y 69 . Estrategia combinadas
+**Nota**
+- Podemos usas estrategias para definir nuestro pwa todo depende de la logica del negocio o lo que requieres
+- `if (e.request.headers.get('accept').includes('text/html')){` podemos usar esta estrategia para validar un html, css, js lo que venga de request 
+
+## 70 - 71 
+
+**Resultados Cuestionarios**
+![Resultados](./info/CuestionarioB.png)
