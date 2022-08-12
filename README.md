@@ -817,3 +817,15 @@ self.addEventListener('fetch', event=>{
 
 **Resultados Cuestionarios**
 ![Resultados](./info/CuestionarioB.png)
+
+## Seccion 7 - Despliegues a disposivos 
+
+**Resumen**
+![Prueba](info/TemaSeccion7.png)
+
+## Clase 72-73-74 
+
+**Nota**
+
+```
+```
