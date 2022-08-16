@@ -823,9 +823,31 @@ self.addEventListener('fetch', event=>{
 **Resumen**
 ![Prueba](info/TemaSeccion7.png)
 
-## Clase 72-73-74 
+## Clase 72-73-74-75-76-77-78
 
 **Nota**
+- El Master nos comparte ya una herramienta de chat creada funcional el proposito es pasarla PWA
+- Aqui aplicaremos las nociones basicas aprendidas y pequeños tips para empezar desarrollar PWA 
+- No logro solventar problemas del cors usando los eventos he estado leyendo esto sin exito -> https://developer.chrome.com/blog/foreign-fetch/
+
+**Ejemplo**
+- El proyecto [Chat Vengadores](Proyectos\05-twittor)
+
+**Resumen**
+- Paso 1: Creamos nuestro archivo ws.js 
+- Paso 2: En nuestro app.js creamos el enlace con el ws.js creado PD-> recuerda que tu app.js es tu archivo js que arranca alguna funcionalidad de tu apliación para este ejemplo este archivo esta en js/app.js 
+- Paso 3: ya arrancamos a la configuración del WS 
+  - Paso 3.1: Creamos nuestras variables caches
+  - Paos 3.2: creamos nuestro evento instalador  
+  - Paos 3.3: creamos nuestro evento activate
+  - Paos 3.4: creamos nuestro evento fetch
+
+- Paso 4: Creamos nuestro Manifest.json 
+  - Paso 4.1: Debemos crear el archivo manifest y configurarlo [Manifest](https://web.dev/add-manifest/)
+  - Paso 4.2: debemos colocar esto en cada página html o plantilla que usemos`<link rel="manifest" href="manifest.json"/>` 
+**Ejemplo  Manifest validado**
+!Manifest[](info/ManifestComprobado.png)
+
 
 ```
 ```
