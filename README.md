@@ -851,3 +851,52 @@ self.addEventListener('fetch', event=>{
 
 ```
 ```
+
+## Seccion 8 - IndexedDB - Reforzamiento de base de datos local
+
+**Resumen**
+![Prueba](info/TemaSeccion8.png)
+
+## Clase 89- Inicios de indexedDB
+**Nota**
+- Cuando modificamos cualquier cosa de la base de datos debemos manejar todos los request y todos los listenes de manera manual. 
+- 
+
+**Ejemplo**
+```
+// indexedDB: Reforzamiento
+let request = window.indexedDB.open('mi-database', 1);
+
+//Se actualiza cuando se crea o se sube una nueva version de la DB 
+
+request.onupgradeneeded = event =>{
+
+    console.log('Actualiza DB');
+    let db = event.target.result; //Referencia a la BD 
+
+    //Necesitamos una key para nuestra BD 
+    db.createObjectStore('heroes', {
+        keyPath:'id'
+
+    });
+
+};
+
+```
+
+**Enlace**
+- https://developer.mozilla.org/es/docs/Web/API/IndexedDB_API
+
+
+## Clase 90 - Manejo de errrores 
+**Nota**
+- Es complejo ya que se debe manejar por eventos
+- se pierde organización del código
+- no es seguro y no es facil de mantener
+  
+**Interfaz**
+- ![info 90](info/Clase90.png)
+
+**Ejemplo**
+- [Ejemplo](Proyectos/07-indexeddb/app.js)
+
