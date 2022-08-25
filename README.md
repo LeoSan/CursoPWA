@@ -900,3 +900,115 @@ request.onupgradeneeded = event =>{
 **Ejemplo**
 - [Ejemplo](Proyectos/07-indexeddb/app.js)
 
+## Clase 92 - PouchDB- Empesando 
+**Nota**
+- PouchDB es una base de datos de JS, que nos permitirá grabar información durante el offline y luego conectarnos y sincronizarlo con otra base de datos en un servidor. 
+- Es un Plugin que trabaja a base de promesas 
+
+**Info**
+- [Tuto](info/Getting+Started+Guide.pdf)
+- https://pouchdb.com/getting-started.html
+
+**Como**
+- Paso 1: Configuramos en el index.html o el archivo principal el la libreria DNS 
+- Anexamos esto en la parte inferior `<script src="//cdn.jsdelivr.net/npm/pouchdb@7.3.0/dist/pouchdb.min.js"></script>`
+- Paso 2: Creamos la base de Datos JS en el `app.js`
+
+```
+var db = new PouchDB('todos');
+var remoteCouch = false;
+```
+- Paso 3: Creamos el metodo para insertar 
+```
+  // We have to create a new todo document and enter it in the database
+  function addTodo(text) {
+    var todo = {
+      _id: new Date().toISOString(),
+      title: text,
+      completed: false
+    };
+    db.put(todo, function callback(err, result) {
+      if (!err) {
+        console.log('Successfully posted a todo!');
+      }
+    });    
+  }
+
+```
+
+## Podemos generar un CRUD de la sigueinte manera. 
+```
+
+  //CREAR
+  // We have to create a new todo document and enter it in the database
+  function addTodo(text) {
+    var todo = {
+      _id: new Date().toISOString(),
+      title: text,
+      completed: false
+    };
+    
+    //Forma callback
+    
+    db.put(todo, function callback(err, result) {
+      if (!err) {
+        console.log('Successfully posted a todo!');
+      }
+    });
+    
+
+    //Forma Promesa
+    /*db.put(todo)
+      .then( console.log('Insertado') )    
+      .catch( console.log );
+      */
+  }
+
+  //Mostrar 
+
+    // Show the current list of todos by reading them from the database
+  function showTodos() {
+
+    
+    //Forma call back
+    /*db.allDocs({include_docs: true, descending: true}, function(err, doc) {
+      redrawTodosUI(doc.rows);
+    });
+    */
+
+    //Forma de promesa
+    db.allDocs({include_docs: true, descending: true})
+    .then(doc =>{
+      redrawTodosUI(doc.rows);
+    });
+
+  }
+
+//Editar
+
+
+  function todoBlurred(todo, event) {
+
+    var trimmedText = event.target.value.trim();
+    if (!trimmedText) {
+      db.remove(todo);
+    } else {
+      todo.title = trimmedText;
+      db.put(todo);
+    }    
+  }
+
+//actualizar
+    function checkboxChanged(todo, event) {
+
+    todo.completed = event.target.checked;
+    db.put(todo).then(console.log('Registro actualizado'));    
+  }
+
+  //Eliminar
+  // User pressed the delete button for a todo, delete it
+  function deleteButtonPressed(todo) {
+    db.remove(todo).then(console.log('Registro Eliminado'));
+  }
+
+```
