@@ -976,6 +976,7 @@ var remoteCouch = false;
     });
     */
 
+    //include_docs: true -> Esto es para recibir el metadato del objeto 
     //Forma de promesa
     db.allDocs({include_docs: true, descending: true})
     .then(doc =>{
@@ -1010,5 +1011,36 @@ var remoteCouch = false;
   function deleteButtonPressed(todo) {
     db.remove(todo).then(console.log('Registro Eliminado'));
   }
+
+```
+
+
+# Sección 9: Sincronización sin conexión - Offline Synchronization
+
+## Clase 99 a 105: 
+**Notas**
+
+- Es la forma de manejar la cache cuando usamos APis
+- Debemos tener presente que cada respuesta se debe estar controlando que va y que no va a la caches para este ejemplo validamos la ruta que se obtienen los mensajes. 
+- Para los post tambien debemos realizar una estrategia para mantener la caches actualiazada
+
+```
+//Esto es para caches dinamicos usando APIS
+// Network with cache fallback / Update 
+// Nota-> cada vez que retornas algo debes manejar la caches para el offline 
+function manejoApiMensajes(cacheName, req){
+    return  fetch(req)
+    .then(resp=>{
+        if (resp.ok){
+            actualizaCacheDinamico(cacheName,req, resp.clone() );//Siempre las respuesta la clonamos para evitar los callback hell
+            return resp.clone();//Para evitar que se ejecute primero
+        }else{
+            return caches.match(req);
+        }
+    }).catch(err =>{
+        return caches.match(req);
+    });
+}
+
 
 ```
