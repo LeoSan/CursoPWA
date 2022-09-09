@@ -1,5 +1,9 @@
 // imports
+//Esto permite usar PunchDB y usar base datos indexed del navegador
+importScripts('https://cdn.jsdelivr.net/npm/pouchdb@7.3.0/dist/pouchdb.min.js'); 
+importScripts('js/sw-db.js');
 importScripts('js/sw-utils.js');
+
 
 
 const STATIC_CACHE    = 'static-v1';
@@ -106,4 +110,17 @@ self.addEventListener( 'fetch', e => {
 
 });
 
+//Tareas Asincronas -> >aquellas que son offline 
+
+self.addEventListener('sync', e=>{
+    console.log('SW:Sync');
+    if (e.tag === 'nuevo-post'){
+        //Postear en la DB 
+        
+
+        //e.waitUntil();
+
+    }
+
+});
 

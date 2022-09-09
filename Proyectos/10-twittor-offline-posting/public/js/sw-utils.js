@@ -48,13 +48,24 @@ function manejoApiMensajes(cacheName, req){
     
     //Estrategia especial para post 
     if(req.clone().method === 'POST'){
-        //Posteo de un nuevo mensaje 
-
-
-        //Tengo que guardar en el indexeDB 
         
+        //syncmanager -> No es soportado por todos los navegadores web 
+        if (self.registration.sync){
 
-        return fetch(req);//dejamos que la petición fluya 
+            //Posteo de un nuevo mensaje , podemos leer y obtener al objeto 
+          return  req.clone().text().then(body=>{//Parte de la paranohia que tiene el sensei, recomienda clonar request 
+                const bodyObj = JSON.parse(body); 
+                //Hay que decirle que se guardo la tarea en modo offLines apenas regrese el internet hay que postear de verdad
+                return guardarMensaje(bodyObj);//-> Colocamos return para que retorne la respuesta offLine
+
+            }); 
+        }else{//no lo puedo guardar como una tarea sincrona 
+            //debemos validar si tenemos conexion a internet!!!             
+            return fetch(req);//dejamos que la petición fluya 
+
+        }
+        
+        
     }else{
         return  fetch(req)
         .then(resp=>{

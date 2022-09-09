@@ -146,8 +146,10 @@ var data ={
 }
 
     
-    //Para ser una petición POST 
-    fetch('/api', {
+
+try {
+       //Para ser una petición POST 
+       fetch('/api', {
         method:'POST',
         headers:{
             'Content-Type':'application/json',
@@ -155,9 +157,16 @@ var data ={
         body:JSON.stringify(data)  
     }).then(resp=>{
         console.log(resp);
+    }).then(resp=>{
+        console.log(resp);
     }).catch(err=>console.log('app.js error', err));
 
     crearMensajeHTML( mensaje, usuario );
+} catch (error) {
+    console.log(error);
+}
+
+
 
 });
 

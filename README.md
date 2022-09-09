@@ -1023,7 +1023,13 @@ var remoteCouch = false;
 - Es la forma de manejar la cache cuando usamos APis
 - Debemos tener presente que cada respuesta se debe estar controlando que va y que no va a la caches para este ejemplo validamos la ruta que se obtienen los mensajes. 
 - Para los post tambien debemos realizar una estrategia para mantener la caches actualiazada
-
+- Recuerda Reuerda que el SW corre independiente a la isntancia de nuestra aplicación para el caso de usar librerias que respalde el uso de sw podemos usar el metodo `importScripts` podemos añadir nuestros pluging de una manera mas comoda 
+- Recuerda que los SW jalan cuando el https seguro 
+- Esto ayuda mucho para generar ID aleatorias sin bajar o instalar un npm `getMensajes._id = new Date().toISOString();`
+- //syncmanager -> No es soportado por todos los navegadores web 
+- Manera de preguntar o validar si el sw esta enlinea -> `self.register` -> `if (self.register.sync){`, todo lo que digar `self` se refiere al `service worker` 
+- Recuerda que los SW deben siempre responder algo 
+- Recuerda la noción básica de `SW` es como un `PROXY` que interfiere las peticiones `fetch` 
 ```
 //Esto es para caches dinamicos usando APIS
 // Network with cache fallback / Update 
