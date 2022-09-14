@@ -1047,6 +1047,37 @@ function manejoApiMensajes(cacheName, req){
         return caches.match(req);
     });
 }
+```
+
+## Clase 109: Disparar posteos cuando hay conexión a internet
+
+**Nota**
+- Esto se hace siempre y cuando el dispositivo tenga soporte a el `Sync Manager` es decir a esto `self.registration.sync`, esto permite que se pueda realizar la sincronización luego que regrese el internet 
+- Recuerda noción básica de como funciona, debemos capturar los datos y estos los podemos meter en una indexDB de tipo cache del lado del navegador, si nos quedamos sin internet usamos esta opción para almacenar los datos y cuando tengamos internet podemos meterle un servicio web para que envie a X base de datos los que se capturo en modo Offline. 
 
 
 ```
+//Tareas Asincronas ->  aquellas que son offline 
+self.addEventListener('sync', e=>{
+    console.log('SW:Sync');
+    if (e.tag === 'nuevo-post'){
+        //Postear en la DB 
+        const respuesta = postearMensajes();
+        //Esto lo envia al SW 
+        e.waitUntil(respuesta);
+    }
+
+});
+```
+
+## Clase 110. Front-End: Detectar cambios de conexión a internet
+
+**Nota**
+- Usaremos el navigator para validar si tenemos  conexión a internet 
+- conociendo esto podemos activar ciertos elementos esto es en caso que que un dispositivo no soporte el `self.registration.sync` 
+
+
+# Sección 10: Notifications - Push Notifications - Push Server
+![Tema 10](info/TemaSeccion10.png)
+
+## Clase 112 : 

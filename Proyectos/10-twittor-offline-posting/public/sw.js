@@ -22,7 +22,9 @@ const APP_SHELL = [
     'img/avatars/thor.jpg',
     'img/avatars/wolverine.jpg',
     'js/app.js',
-    'js/sw-utils.js'
+    'js/sw-utils.js',
+    'js/libs/plugins/mdtoast.min.js',
+    'js/libs/plugins/mdtoast.min.css',
 ];
 
 const APP_SHELL_INMUTABLE = [
@@ -110,16 +112,14 @@ self.addEventListener( 'fetch', e => {
 
 });
 
-//Tareas Asincronas -> >aquellas que son offline 
-
+//Tareas Asincronas ->  aquellas que son offline 
 self.addEventListener('sync', e=>{
     console.log('SW:Sync');
     if (e.tag === 'nuevo-post'){
         //Postear en la DB 
-        
-
-        //e.waitUntil();
-
+        const respuesta = postearMensajes();
+        //Esto lo envia al SW 
+        e.waitUntil(respuesta);
     }
 
 });

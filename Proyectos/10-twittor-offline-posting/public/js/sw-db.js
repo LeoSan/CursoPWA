@@ -19,3 +19,40 @@ function guardarMensaje(mensaje){
     });
 
 }
+
+//Postear mensaje a la API 
+function postearMensajes(){
+
+    const posteos =[];
+
+    //Forma de recorrer el db dbasesindexes 
+    return db.allDocs({include_docs:true}).then(docs=>{
+        
+        //Bucle para validar el contenido 
+        docs.rows.forEach(row=>{
+            const doc = row.doc; 
+            try {
+                //Para ser una petición POST 
+              const fetchPromesa =  fetch('/api', {
+                                    method:'POST',
+                                    headers:{
+                                        'Content-Type':'application/json',
+                                    },
+                                    body:JSON.stringify(doc) })
+                                    .then(res=>{
+                                        //Lo elimino ya que si no cada ves que hagas un posteo te meterá el valor viejo una y otra vez 
+                                       return db.remove(doc);
+                                    }).catch(err=>console.log('app.js error', err));
+                                    //Lo almacen en el arreglo
+                                    posteos.push(fetchPromesa); 
+            }catch(error){
+                console.log('app.js error', error)
+            }   
+        });//fin del foreach 
+        //Esto hace que espere y se ejecuten todas las promesas 
+        return Promise.all(posteos);
+
+    });
+
+
+}

@@ -1,25 +1,15 @@
-
 var url = window.location.href;
 var swLocation = '/twittor/sw.js';
 
-
+//Valida si esta en Local o en Producción
 if ( navigator.serviceWorker ) {
-
-
     if ( url.includes('localhost') ) {
         swLocation = './sw.js';
     }
-
-
     navigator.serviceWorker.register( swLocation );
 }
 
-
-
-
-
 // Referencias de jQuery
-
 var titulo      = $('#titulo');
 var nuevoBtn    = $('#nuevo-btn');
 var salirBtn    = $('#salir-btn');
@@ -37,9 +27,7 @@ var txtMensaje  = $('#txtMensaje');
 var usuario;
 
 
-
-
-// ===== Codigo de la aplicaciÃ³n
+// ===== Codigo de la aplicación
 
 function crearMensajeHTML(mensaje, personaje) {
 
@@ -155,8 +143,8 @@ try {
             'Content-Type':'application/json',
         },
         body:JSON.stringify(data)  
-    }).then(resp=>{
-        console.log(resp);
+    }).then(res=>{
+        console.log(res);
     }).then(resp=>{
         console.log(resp);
     }).catch(err=>console.log('app.js error', err));
@@ -180,7 +168,6 @@ function getMensajes(){
         .then(res=> res.json())
         .then(posts =>{
             console.log(posts);
-
             posts.forEach(element => {
                 crearMensajeHTML(element.mensaje, element.user);    
             });
@@ -190,3 +177,34 @@ function getMensajes(){
 };
 
 getMensajes();
+
+//Metodo: Detectando conexion 
+function isOnline(){
+    if (navigator.onLine){
+        console.log(`Estamos online`);
+         $.mdtoast('OnLine.', 
+         { 
+            type: 'success',
+            interaction:true, 
+            interactionTimeout:1000, 
+           actionText: 'ok!' 
+        }); 
+    }else{
+        console.log(`Estamos offline`);
+        $.mdtoast('OnLine.', 
+        { 
+           type: 'info',
+           interaction:true, 
+           interactionTimeout:1000, 
+          actionText: 'ok!' 
+       }); 
+    }
+}
+
+//Eventos 
+
+isOnline();
+
+window.addEventListener('online', isOnline);
+
+window.addEventListener('offline', isOnline);
