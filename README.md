@@ -182,6 +182,7 @@ fetch('https://reqres.in/api/users')
 
 **Consejos**
 - Siempre debemos limpiar cache para manejar los service worker
+- https://jshint.com/docs/options/ Comfiguración 
 
 ![Usar_ToolDEV_0001](./info/Usar_ToolDEV_0001.png)
 
