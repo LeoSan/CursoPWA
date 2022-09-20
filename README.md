@@ -1081,4 +1081,23 @@ self.addEventListener('sync', e=>{
 # Sección 10: Notifications - Push Notifications - Push Server
 ![Tema 10](info/TemaSeccion10.png)
 
-## Clase 112 : 
+## 114. Introducción al envío de Push Notifications
+
+**Qué es**
+> Notificación push es una manera que tiene un servidor para mandarte una notificación directamente en tu dispositivo sin que tú hayas programado algo en particular. 
+
+**Características**
+- Importa el permiso, nosotros no vamos a poder Mandar ninguna notificación push sin que el usuario literalmente no acepte recibir notificaciones. 
+- Existen 3 tipos de estados para la notificaciones 
+- Estado 1 -> Este estado es el `Granted` quiere decir que el usuario acepto recibir tus notificaciones
+- Estado 2 -> Este estado `Denied` quiere decir que el usuario no quiere recibir notificaciones tuyas y por más que quieras no le vas a poder Mandar ninguna. 
+- Estado 3 -> Existen usuarios que no quieren que les estén preguntando y las aceptan todas o las bloquean todas ahí no tenemos mucho que hacer pero nos daríamos cuenta si están permitidas o denegadas. 
+
+**Notas**
+
+>la gran mayoria de las aplicaciones preguntan demasiado temprano si desea recibir notificaciones en 99% de la gente cuando entra a un sitio web que desconoce y le dice "te queremos Mandar notificaciones" el 99% de nosotros va a decir que NO;  NO queremos que nos molesten porque no sabemos ni para quien nos quieren Mandar notificaciones pero si lo ofrecemos en el momento correcto y ofrecemos los beneficios podemos incrementar esto dramáticamente. 
+
+**Como**
+> lamentablemente tenemos que pasar por un servicio de terceros normalmente es ofrecido por el mismo navegador web en caso de Google chrome o navegadores que usen androide pasa por `Google firebase cloud Messenger`  para los usuarios de firefox también tienen su propio `cloud messaging` pero lo bueno aquí es que no hay que suscribirse no hay que registrarse no hay que pagar nada no hay un un límite de envío de notificaciones. 
+![como](info/NOTI_PUSH_0001.png)
+
