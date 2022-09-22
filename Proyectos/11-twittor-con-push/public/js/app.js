@@ -219,3 +219,56 @@ window.addEventListener('offline', isOnline );
 
 isOnline();
 
+
+//Eventos  Notificaciones 
+
+//Solicitar notificaciones 
+
+
+function verificaSuscripcion(activas){
+
+    if (activas){
+        
+        btnActivadas.removeClass('oculto');
+        btnDesactivadas.addClass('oculto');
+    }else{
+        btnActivadas.addClass('oculto');
+        btnDesactivadas.removeClass('oculto');
+    }
+
+}
+
+function enviarNoticacion(){
+    const objOpt = {
+        body:'Este va ser el cuerpo',
+        icon:'Proyectos\11-twittor-con-push\public\img\icons\icon-72x72.png',
+    }
+   const noti =  new Notification('Hola mundo', objOpt);
+   return noti;
+}
+
+
+function notificarme(){
+
+    //Debemos validar si el navegador lo soporta 
+    if(!window.Notification){
+        console.log("Este navegador no soporta notificaciones");
+        return null; 
+    }
+
+    if (Notification.permission === 'granted'){
+        new Notification('hola mundo - granted');
+    }else if(Notification.permission !== 'granted' || Notification.permission ==='default'){
+        Notification.requestPermission( (permission)=>{
+
+            console.log("permission", permission );
+            if (permission === 'granted'){
+                new Notification('hola mundo - pregunta');
+            }
+
+        });
+    }
+}
+
+verificaSuscripcion();
+notificarme();

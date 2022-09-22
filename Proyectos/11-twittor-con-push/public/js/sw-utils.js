@@ -8,7 +8,7 @@ function actualizaCacheDinamico( dynamicCache, req, res ) {
 
         return caches.open( dynamicCache ).then( cache => {
 
-            cache.put( req, res.clone() );
+           // cache.put( req, res.clone() );
             
             return res.clone();
 

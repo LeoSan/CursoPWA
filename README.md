@@ -1101,3 +1101,44 @@ self.addEventListener('sync', e=>{
 > lamentablemente tenemos que pasar por un servicio de terceros normalmente es ofrecido por el mismo navegador web en caso de Google chrome o navegadores que usen androide pasa por `Google firebase cloud Messenger`  para los usuarios de firefox también tienen su propio `cloud messaging` pero lo bueno aquí es que no hay que suscribirse no hay que registrarse no hay que pagar nada no hay un un límite de envío de notificaciones. 
 ![como](info/NOTI_PUSH_0001.png)
 
+
+**Ejemplo Código**
+```
+//Solicitar notificaciones 
+
+//Ejemplo creando una estructura personalizada al notificacion
+function enviarNoticacion(){
+    const objOpt = {
+        body:'Este va ser el cuerpo',
+        icon:'Proyectos\11-twittor-con-push\public\img\icons\icon-72x72.png',
+    }
+   const noti =  new Notification('Hola mundo', objOpt);
+   return noti;
+}
+
+
+function notificarme(){
+
+    //Debemos validar si el navegador lo soporta 
+    if(!window.Notification){
+        console.log("Este navegador no soporta notificaciones");
+        return null; 
+    }
+
+    if (Notification.permission === 'granted'){
+        new Notification('hola mundo - granted');
+    }else if(Notification.permission !== 'granted' || Notification.permission ==='default'){
+        Notification.requestPermission( (permission)=>{
+
+            console.log("permission", permission );
+            if (permission === 'granted'){
+                new Notification('hola mundo - pregunta');
+            }
+
+        });
+    }
+}
+
+
+notificarme();
+```
