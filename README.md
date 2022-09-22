@@ -1081,7 +1081,7 @@ self.addEventListener('sync', e=>{
 # Sección 10: Notifications - Push Notifications - Push Server
 ![Tema 10](info/TemaSeccion10.png)
 
-## 114. Introducción al envío de Push Notifications
+## 114-118. Introducción al envío de Push Notifications
 
 **Qué es**
 > Notificación push es una manera que tiene un servidor para mandarte una notificación directamente en tu dispositivo sin que tú hayas programado algo en particular. 
