@@ -1,7 +1,6 @@
-
 var url = window.location.href;
 var swLocation = '/twittor/sw.js';
-
+var swReg;
 
 if ( navigator.serviceWorker ) {
 
@@ -10,13 +9,19 @@ if ( navigator.serviceWorker ) {
         swLocation = '/sw.js';
     }
 
+    
+    //Super importante cuando cargue la pagina principal cargamos tambien el SW
+    window.addEventListener('load', function() {
 
-    navigator.serviceWorker.register( swLocation );
+        navigator.serviceWorker.register( swLocation ).then( function(reg){
+            swReg = reg;
+            swReg.pushManager.getSubscription().then( verificaSuscripcion );
+        });
+
+    });
+
+    
 }
-
-
-
-
 
 // Referencias de jQuery
 
@@ -67,8 +72,6 @@ function crearMensajeHTML(mensaje, personaje) {
     cancelarBtn.click();
 
 }
-
-
 
 // Globals
 function logIn( ingreso ) {
@@ -179,16 +182,10 @@ function getMensajes() {
             console.log(posts);
             posts.forEach( post =>
                 crearMensajeHTML( post.mensaje, post.user ));
-
-
         });
-
-
 }
 
 getMensajes();
-
-
 
 // Detectar cambios de conexión
 function isOnline() {
@@ -270,5 +267,66 @@ function notificarme(){
     }
 }
 
-verificaSuscripcion();
-notificarme();
+//Funcion para solicitar key 
+function getPublicKey(){
+
+    // fetch('api/key')
+    // .then(res => res.text())
+    // .then(console.log);
+
+   return fetch('api/key')
+    .then(res => res.arrayBuffer())
+    .then(key => new Uint8Array(key));//Se debe retornar como un Uint8Array
+
+}
+
+//Evento Clic para registrar subcripcion 
+btnDesactivadas.on( 'click', function() {
+
+    if ( !swReg ) return console.log('No hay registro de SW');
+
+    getPublicKey().then( function( key ) {
+
+        swReg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: key
+        })
+        .then( res => res.toJSON() )
+        .then( suscripcion => {
+            
+            // console.log(suscripcion);
+            //Hacemos el posteo de la Suscripción para registrarlo en el navegador 
+            fetch('api/subscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify( suscripcion )
+            })
+            .then( verificaSuscripcion )
+            .catch( cancelarSuscripcion );
+
+        });
+
+    });
+
+
+});
+
+//Evento Clic para cancelar subscripcion 
+function cancelarSuscripcion() {
+
+    swReg.pushManager.getSubscription().then( subs => {
+
+        subs.unsubscribe().then( () =>  verificaSuscripcion(false) );
+
+    });
+
+
+}
+
+btnActivadas.on( 'click', function() {
+
+    cancelarSuscripcion();
+
+
+});
+

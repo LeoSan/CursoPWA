@@ -43,40 +43,43 @@ function actualizaCacheStatico( staticCache, req, APP_SHELL_INMUTABLE ) {
 // Network with cache fallback / update
 function manejoApiMensajes( cacheName, req ) {
 
-
-    if ( req.clone().method === 'POST' ) {
-        // POSTEO de un nuevo mensaje
-
-        if ( self.registration.sync ) {
-            return req.clone().text().then( body =>{
-    
-                // console.log(body);
-                const bodyObj = JSON.parse( body );
-                return guardarMensaje( bodyObj );
-    
-            });
-        } else {
-            return fetch( req );
-        }
-
-
-    } else {
-
-        return fetch( req ).then( res => {
-    
-            if ( res.ok ) {
-                actualizaCacheDinamico( cacheName, req, res.clone() );
-                return res.clone();
+    //Valido para hacer la Estretgia de network Only 
+    if((req.url.indexOf('/api/key') >= 0)  || (req.url.indexOf('/api/subscribe') >= 0) ){
+            return fetch(req);
+    }else{
+        //Valido si es un post y aplico estrategia Network with cache fallback / update
+        if ( req.clone().method === 'POST' ) {
+        
+            // POSTEO de un nuevo mensaje
+            if ( self.registration.sync ) {
+                return req.clone().text().then( body =>{
+        
+                    // console.log(body);
+                    const bodyObj = JSON.parse( body );
+                    return guardarMensaje( bodyObj );
+        
+                });
             } else {
-                return caches.match( req );
+                return fetch( req );
             }
-      
-        }).catch( err => {
-            return caches.match( req );
-        });
-
+    
+    
+        } else {
+    
+            return fetch( req ).then( res => {
+        
+                if ( res.ok ) {
+                    actualizaCacheDinamico( cacheName, req, res.clone() );
+                    return res.clone();
+                } else {
+                    return caches.match( req );
+                }
+          
+            }).catch( err => {
+                return caches.match( req );
+            });
+    
+        }
     }
-
-
 }
 

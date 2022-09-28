@@ -1142,3 +1142,148 @@ function notificarme(){
 
 notificarme();
 ```
+
+## Clase 119: Generar llave publica y privada  
+
+> Podemos usar web-push como un administrador de publicaciones push 
+
+**Como**
+- Podemos ejecutar el comando `npm i web-push`
+- [Enlace - Documentación](https://www.npmjs.com/package/web-push)
+
+**Uso**
+- Paso 1: Debemos instalar el paquete 
+- Paso 2: habilitarlo en nuestro script de `package.json` de la siguiente manera:
+```
+  "scripts": {
+    "start": "node server/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node ./node_modules/nodemon/bin/nodemon.js server/server",
+    "generate-vapid": "node ./node_modules/web-push/src/cli.js generate-vapid-keys --json  > server/vapid.js"
+  },
+```
+- Paso 3: ejecutamos el comando y este nos genera las llaves, `npm run generate-vapid`
+- Paso 4: esto se genera una sola ves 
+
+## Clase 120 - 124 : Retornando nuestro Key 
+> Para este caso el portal web-push no recomienda usar una función que tiene windows pero esto solo funciona del lado del cliente por lo que debemos buscar un paquete que debemos instalar en el lado servidor este tiene el nombre de `urlsafe-base64`
+
+**Como**
+- Paso 1: debemos instalar el paquete `npm i urlsafe-base64` [Enlace-documentacion](https://www.npmjs.com/package/urlsafe-base64)
+- Paso 2: Editamos nuestro archivo `pushs.js` de esta manera: 
+```
+const vapid = require('./vapid.json');
+const urlBase64 = require('urlsafe-base64');
+const getKey = () =>{
+  return urlBase64.decode(vapid.publicKey);
+};
+
+module.exports ={
+    getKey
+};
+
+```
+- Paso 3: esta es la forma segura de retornar una llave publica para los push, luego vamos a nuetsro `app.js` del lado cliente y anexamos lo siguiente: 
+
+```
+//Aseguramos que el SW se cargue al mismo tiempo que cargue la pagina y no despues 
+
+var url = window.location.href;
+var swLocation = '/twittor/sw.js';
+var swReg;
+
+if ( navigator.serviceWorker ) {
+
+
+    if ( url.includes('localhost') ) {
+        swLocation = '/sw.js';
+    }
+
+    
+    //Super importante cuando cargue la pagina principal cargamos tambien el SW
+    window.addEventListener('load', function() {
+
+        navigator.serviceWorker.register( swLocation ).then( function(reg){
+            swReg = reg;
+            swReg.pushManager.getSubscription().then( verificaSuscripcion );
+        });
+
+    });
+
+    
+}
+
+
+//Aqui generamos la suscripción del push usando las llaves privadas claro esto se ativa al dar clic al boton de activar notificaciones, recuerda las notificaciones funcionan por un API del navegador Chrome y esta es diferente o soportada por diferentes navegadores
+
+//Evento Clic para registrar subcripcion 
+btnDesactivadas.on( 'click', function() {
+
+    if ( !swReg ) return console.log('No hay registro de SW');
+
+    getPublicKey().then( function( key ) {
+
+        swReg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: key
+        })
+        .then( res => res.toJSON() )
+        .then( suscripcion => {
+            
+            // console.log(suscripcion);
+            //Hacemos el posteo de la Suscripción para registrarlo en el navegador 
+            fetch('api/subscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify( suscripcion )
+            })
+            .then( verificaSuscripcion )
+            .catch( cancelarSuscripcion );
+
+        });
+
+    });
+
+});
+
+
+//Ahora del lado del cliente router va esto 
+// Almacenar subcrición
+router.post('/subscribe',  (req, res) => {
+  const suscripcion = req.body;
+  pushs.addSubscription( suscripcion );
+  res.json('subscribe');
+});
+
+// Usamos nuestro push 
+
+const fs = require('fs');
+const vapid = require('./vapid.json');
+const urlBase64 = require('urlsafe-base64');
+const webpush = require('web-push');
+
+//let suscripciones = [];
+let suscripciones = require('./subs-db.json');
+
+//Metodo para geneear la llave publica
+const getKey = () =>{
+  return urlBase64.decode(vapid.publicKey);
+};
+
+
+//Metodo para generar la suscripcion con el API de notificaciones de CHROME 
+const addSubscription = ( suscripcion ) => {
+  suscripciones.push( suscripcion );
+  console.log(suscripcion);
+  //Aqui lo podemos colocar en una base de datos pero como no tenemos usamos un archivo json 
+  fs.writeFileSync(`${ __dirname }/subs-db.json`, JSON.stringify(suscripciones) );
+
+};
+
+module.exports ={
+    getKey,
+    addSubscription
+};
+
+
+```
