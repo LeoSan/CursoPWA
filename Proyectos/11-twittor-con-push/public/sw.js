@@ -131,3 +131,85 @@ self.addEventListener('sync', e => {
 
 
 });
+
+
+//Debemos escuchar Push 
+// tareas asíncronas
+self.addEventListener('push', e => {
+
+    console.log(e);
+    const data = JSON.parse( e.data.text() );
+
+    //Hacemos la notificación del push 
+    const title = data.titulo;
+    const options = {
+        body: data.body,
+        // icon: 'img/icons/icon-72x72.png',
+        icon: `img/avatars/${ data.usuario }.jpg`,//Imagen que se muestra en el navegador 
+        badge: 'img/favicon.ico',//Se usa para los dispositivos android 
+        image: 'https://vignette.wikia.nocookie.net/marvelcinematicuniverse/images/5/5b/Torre_de_los_Avengers.png/revision/latest?cb=20150626220613&path-prefix=es',//Colocar una imagen grande en el celular 
+        vibrate: [125,75,125,275,200,275,125,75,125,275,200,600,200,600],//Permite que vibre el celular 
+        openUrl: '/',
+        data: {
+            // url: 'https://google.com',
+            url: '/',
+            id: data.usuario
+        },
+        actions: [//Desplega un mini menu en el push 
+            {
+                action: 'thor-action',
+                title: 'Thor',
+                icon: 'img/avatar/thor.jpg'
+            },
+            {
+                action: 'ironman-action',
+                title: 'Ironman',
+                icon: 'img/avatar/ironman.jpg'
+            }
+        ]
+    };
+
+    //Necesito esperar que la notifiacación haga todo lo que tiene  que hacer 
+    e.waitUntil( self.registration.showNotification( title, options) );
+
+});
+
+
+// Cierra la notificacion
+self.addEventListener('notificationclose', e => {
+    console.log('Notificación cerrada', e);
+});
+
+self.addEventListener('notificationclick', e => {
+
+    //La notificación y la acción viene en event 
+    const notificacion = e.notification;
+    const accion = e.action;
+
+    console.log({ notificacion, accion });
+
+
+    //Permite aceder a las  notificaciones de los clientes 
+    const respuesta = clients.matchAll()
+    .then( clientes => {
+
+        let cliente = clientes.find( c => {
+            return c.visibilityState === 'visible';//Valido si hay un Cliente visible 
+        });
+
+
+        if ( cliente !== undefined ) {
+            cliente.navigate( notificacion.data.url );
+            cliente.focus();//Habilita este tag para que este activo en el navegador 
+        } else {//Esto en caso que el navegador este cerrado 
+            clients.openWindow( notificacion.data.url );
+        }
+
+        return notificacion.close();//Forma de cerrar notficaciones 
+
+    });
+
+    //Valido hasta que podamos resolver todas las acciones 
+    e.waitUntil( respuesta );
+});
+

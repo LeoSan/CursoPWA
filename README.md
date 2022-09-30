@@ -1287,3 +1287,170 @@ module.exports ={
 
 
 ```
+
+
+## Clase 120 - 124 : Configurar web-push y enviar una notificicion 
+
+**Nota**
+- Para este ejemplo usamos un pquetes llamado web-push 
+- Necesito esperar que la notifiacación haga todo lo que tiene  que hacer 
+- [Documento de notificación](https://web.dev/push-notifications-display-a-notification/) Esta es la documentación para configurar un poco de las notificaicones 
+- En caso de Mobile podemos tener patrones de vibraciones  [Documentación](https://gearside.com/custom-vibration-patterns-mobile-devices/) 
+- Se recomienda usar direcciones absolutas para las imagenes en las notificaciones 
+- Segun no tienen un costo por tantas notificaciones creadas 
+
+
+**Como**
+- Paso 1: Instalar paquete `npm i web-push`
+- Paso 2: en nuestro archivo ``pushs.js` hacemos la configuración de esta manera  
+```
+//Enviamos un mensaje a todas las suscripciones 
+const sendPush = ( post ) => {
+
+  console.log('Mandando PUSHES');
+  const notificacionesEnviadas = [];
+
+
+  //Lista de suscripcion
+  suscripciones.forEach( (suscripcion, i) => {
+
+    //Forma de enviar notificaciones 
+      const pushProm = webpush.sendNotification( suscripcion , JSON.stringify( post ) )
+          .then( console.log( 'Notificacion enviada ') )
+          .catch( err => {
+
+              console.log('Notificación falló', err.statusCode);
+
+              if ( err.statusCode === 410 ) { // GONE, ya no existe
+                  suscripciones[i].borrar = true;//Solo lo marca para borrar
+              }
+
+          });
+
+      notificacionesEnviadas.push( pushProm );
+
+  });
+
+
+  //Aqui borro las que tenga la bandera de borrar 
+  Promise.all( notificacionesEnviadas ).then( () => {
+
+      suscripciones = suscripciones.filter( subs => !subs.borrar );//Quedan las que no estan borradas, forma de borrar usando filter
+
+      fs.writeFileSync(`${ __dirname }/subs-db.json`, JSON.stringify(suscripciones) );
+
+  });
+
+};
+```
+
+- Paso 3: configuramos nuestro router o service lo siguiente: claro peviamente importamos nuestro `pushs.js` 
+```
+// Enviar notificación PUSH a las personas 
+//Esto es algo que se controla desde el lado server  
+router.post('/push',  (req, res) => {
+  
+  const notificacion = {
+    titulo:req.body.titulo,
+    body:req.body.body,
+    usuario:req.body.usuario
+  }; 
+
+  pushs.sendPush(notificacion);
+
+  res.json(notificacion);
+
+});
+
+```
+
+- Paso 4: Configuramos el `SW` para que pueda escuchar cuando enviamos un `sendPush`: 
+```
+//Debemos escuchar Push 
+// tareas asíncronas
+self.addEventListener('push', e => {
+
+    console.log(e);
+    const data = JSON.parse( e.data.text() );
+
+    //Hacemos la notificación del push 
+    const title = data.titulo;
+    const options = {
+        body: data.body,
+        // icon: 'img/icons/icon-72x72.png',
+        icon: `img/avatars/${ data.usuario }.jpg`,//Imagen que se muestra en el navegador 
+        badge: 'img/favicon.ico',//Se usa para los dispositivos android 
+        image: 'https://vignette.wikia.nocookie.net/marvelcinematicuniverse/images/5/5b/Torre_de_los_Avengers.png/revision/latest?cb=20150626220613&path-prefix=es',//Colocar una imagen grande en el celular 
+        vibrate: [125,75,125,275,200,275,125,75,125,275,200,600,200,600],//Permite que vibre el celular 
+        openUrl: '/',
+        data: {
+             url: 'https://google.com',
+            //url: '/',
+            id: data.usuario
+        },
+        actions: [//Desplega un mini menu en el push 
+            {
+                action: 'thor-action',
+                title: 'Thor',
+                icon: 'img/avatar/thor.jpg'
+            },
+            {
+                action: 'ironman-action',
+                title: 'Ironman',
+                icon: 'img/avatar/ironman.jpg'
+            }
+        ]
+    };
+
+    //Necesito esperar que la notifiacación haga todo lo que tiene  que hacer 
+    e.waitUntil( self.registration.showNotification( title, options) );
+
+});
+```
+
+## Clase 127 - 128: Mas opciones del noficaciones y redireccionamientos acciones del notificaciones 
+**Nota**
+- Podemos validar el archivo SW.js para validar este evento [ejemplo](Proyectos\11-twittor-con-push\public\sw.js)
+
+```
+self.addEventListener('notificationclick', e => {
+
+    //La notificación y la acción viene en event 
+    const notificacion = e.notification;
+    const accion = e.action;
+
+    console.log({ notificacion, accion });
+
+
+    //Permite aceder a las  notificaciones de los clientes 
+    const respuesta = clients.matchAll()
+    .then( clientes => {
+
+        let cliente = clientes.find( c => {
+            return c.visibilityState === 'visible';//Valido si hay un Cliente visible 
+        });
+
+
+        if ( cliente !== undefined ) {
+            cliente.navigate( notificacion.data.url );
+            cliente.focus();//Habilita este tag para que este activo en el navegador 
+        } else {//Esto en caso que el navegador este cerrado 
+            clients.openWindow( notificacion.data.url );
+        }
+
+        return notificacion.close();//Forma de cerrar notficaciones 
+
+    });
+
+    //Valido hasta que podamos resolver todas las acciones 
+    e.waitUntil( respuesta );
+});
+
+```
+
+> Resumen: 
+- No me funciono en Chrome ando indagando poque demonios
+- Si me funciono en FireFox pero las opciones extras del la notificación no me funciono 
+- Me quedo con el aprendizaje es otra ciencia es decir no es algo que se hace un dos por tres al menos una semana para hacer unas buena notificaciones 
+- Podemos usar notificaciones para sistemas en caso que se detecte acciones como un nuevo registro, edición o eliminación del mismo. 
+- Esta perro esto ya que si la pestaña principal esta cerrada el SW seguira dando vueltitas y te avisará de lo que desees .
