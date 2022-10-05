@@ -1454,3 +1454,21 @@ self.addEventListener('notificationclick', e => {
 - Me quedo con el aprendizaje es otra ciencia es decir no es algo que se hace un dos por tres al menos una semana para hacer unas buena notificaciones 
 - Podemos usar notificaciones para sistemas en caso que se detecte acciones como un nuevo registro, edición o eliminación del mismo. 
 - Esta perro esto ya que si la pestaña principal esta cerrada el SW seguira dando vueltitas y te avisará de lo que desees .
+
+
+# Sección 11
+![Seccion 11](./info/Seccion_11_Recurso_nativos.png)
+
+## Clase 134: Uso de Geolocalización 
+> Actualmente los navegadores soportan geolocalización y los dispositivos mobiles 
+
+**Notas**
+- Usamos el objeto navigator
+
+
+
+**Enlace**
+- https://web.dev/native-hardware-user-location/
+
+**Herramientas de toolde**
+![ToolDev](./info/Seccion_11_Recurso_nativos_0002.png)
