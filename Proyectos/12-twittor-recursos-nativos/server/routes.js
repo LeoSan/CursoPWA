@@ -27,12 +27,15 @@ router.post('/', function (req, res) {
 
   const mensaje = {
     mensaje: req.body.mensaje,
-    user: req.body.user
+    user: req.body.user, 
+    lat:req.body.lat,
+    lng:req.body.lng,
+    foto:req.body.foto
   };
 
   mensajes.push( mensaje );
 
-  // console.log(mensajes);
+   console.log(mensajes);
 
 
   res.json({

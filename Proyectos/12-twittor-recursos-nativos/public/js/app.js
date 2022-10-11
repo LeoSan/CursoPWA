@@ -76,16 +76,22 @@ var foto = null;
 // El usuario, contiene el ID del héroe seleccionado
 var usuario;
 
-
+//Init de la camara class 
+//document.getElementById('player');
+const camara = new Camara( $('#player')[0] );
 
 // ===== Codigo de la aplicación
 
-function crearMensajeHTML(mensaje, personaje, lat, lng, foto) {
+function crearMensajeHTML(mensaje, personaje, lat, lng, foto ) {
 
     // console.log(mensaje, personaje, lat, lng);
 
     var content =`
     <li class="animated fadeIn fast"
+        data-user="${personaje}"
+        data-mensaje="${mensaje}"
+        data-lat="${lat}"
+        data-lng="${lng}"
         data-tipo="mensaje">
 
 
@@ -260,12 +266,12 @@ postBtn.on('click', function() {
     .then( res => console.log( 'app.js', res ))
     .catch( err => console.log( 'app.js error:', err ));
 
-    camera.apagar();
+    camara.apagar();
     contenedorCamara.addClass('oculto');
 
     crearMensajeHTML( mensaje, usuario, lat, lng, foto );
     
-    foto = null;
+    foto = null;//Limpiamos para no tener errores de memoria 
 });
 
 
@@ -492,6 +498,8 @@ btnLocation.on('click', () => {
         navigator.geolocation.getCurrentPosition( pos=>{
             console.log(pos);
             mostrarMapaModal(pos.coords.latitude, pos.coords.longitude);
+            lat = pos.coords.latitude; 
+            lng = pos.coords.longitude; 
         });
 
     }
@@ -505,8 +513,9 @@ btnLocation.on('click', () => {
 // usamos la funcion de fleca para prevenir
 // que jQuery me cambie el valor del this
 btnPhoto.on('click', () => {
-
+    contenedorCamara.removeClass('oculto');
     console.log('Inicializar camara');
+    camara.encender();
 
 });
 
@@ -515,11 +524,44 @@ btnPhoto.on('click', () => {
 btnTomarFoto.on('click', () => {
 
     console.log('Botón tomar foto');
+    foto=camara.tomarfoto();
+    camara.apagar();
+    console.log("foto->",foto);
     
 });
 
 
 // Share API
+timeline.on('click', 'li', function() {
 
+    // console.log(  $(this)  );
+    
+    let tipo    = $(this).data('tipo');
+    let lat     = $(this).data('lat');
+    let lng     = $(this).data('lng');
+    let mensaje = $(this).data('mensaje');
+    let user    = $(this).data('user');
+    
+    console.log({ tipo, lat, lng, mensaje, user  });
+
+    const shareOpts = {
+        title: user,
+        text: mensaje
+    };
+
+    if ( tipo === 'mapa' ) {
+        shareOpts.text = 'Mapa';
+        shareOpts.url  = `https://www.google.com/maps/@${ lat },${ lng },15z`;
+    }
+    if (navigator.share){
+        navigator.share(shareOpts)
+        .then(() => console.log('Successful share'))
+        .catch((error) => console.log('Error sharing', error));
+
+    }else{
+        console.log("Tu navegador no soporta ");
+    }
+
+});
 
 

@@ -1472,3 +1472,130 @@ self.addEventListener('notificationclick', e => {
 
 **Herramientas de toolde**
 ![ToolDev](./info/Seccion_11_Recurso_nativos_0002.png)
+
+
+## Clase 136: Activar camara 
+> Actualmente los navegadores podemos acceder al dispositivo de la camara siempre y cuando el usuario permita usar la camra en su navegador 
+
+**Notas**
+- Existe el objeto `navigator`   tiene como propiedad `mediaDevices`
+- Podemos definir audio y video 
+- Si usaos video recuerda definir el ancho y el alto de la imagen ya que existen telefonos con buenas resoluciones pero toma una foto de alta resolucion es muy pesado para nuestra aplicación. 
+- Esta propiedad es una promesa por lo que debemos aplicar los principios de promesa 
+- Para poder visualizar lo que se ve en la camara debemos usar la etiqueta de html5 video en nuestro front 
+- En el Front es asi `<video id="player" autoplay style="height: 300px;"></video>`
+- En el Back es asi `camara.encender();`
+- Recuerda se creo una clase `CamaraClass.js` para el manejo
+- Recuerda detener la camara ya que es aqui donde se toaa la foto
+- Hay que realizar un proceso canvas para obtener la foto y mostrarla 
+- 
+
+**Enlace**
+- https://developer.mozilla.org/es/docs/Web/API/MediaDevices/getUserMedia
+
+
+```
+class Camara{
+
+    constructor(videoNode){
+        this.videoNode = videoNode;
+    }
+
+
+    encender(){
+        navigator.mediaDevices.getUserMedia({
+            audio:false,
+            video:{width:300, height:300}
+        }).then(stream=>{
+            this.videoNode.srcObject = stream;
+            this.stream = stream;
+        });
+
+    }
+
+    apagar(){
+        this.videoNode.pause();
+        if (this.stream){
+            this.stream.getTracks()[0].stop();
+        }
+
+
+    }
+
+    tomarfoto(){
+      //Canvas : Es un lienzo donde podemos colocar informacion   
+      //Crear un elemento canvas para renderizar ahi la foto 
+        let  canvas = document.createElement('canvas');
+        
+       // Colocar las dimensiones igual al del video 
+        canvas.setAttribute('width', 300);
+        canvas.setAttribute('height', 300);
+
+        //Obtener el contexto del canvas 
+        let context = canvas.getContext('2d');
+        //Dibujar o rendereizar 
+        context.drawImage(this.videoNode, 0, 0, canvas.width, canvas.height);
+
+        //Extraer imagen 
+        this.foto = context.canvas.toDataURL();
+        //limpieza 
+        canvas = null;
+        context = null; 
+
+        return this.foto;
+        
+
+    }
+}
+
+```
+
+
+## Clase 140: Share API 
+
+
+**Enlace**
+- https://caniuse.com/?search=share
+- https://web.dev/web-share/
+
+**Nota**
+- No todos los navegadores lo soporta pero ya Chrome si
+- Es mas para uso de moviles 
+- leer la documentación 
+- 
+
+```
+// Share API -> Código base 
+timeline.on('click', 'li', function() {
+
+    // console.log(  $(this)  );
+    
+    let tipo    = $(this).data('tipo');
+    let lat     = $(this).data('lat');
+    let lng     = $(this).data('lng');
+    let mensaje = $(this).data('mensaje');
+    let user    = $(this).data('user');
+    
+    console.log({ tipo, lat, lng, mensaje, user  });
+
+    const shareOpts = {
+        title: user,
+        text: mensaje
+    };
+
+    if ( tipo === 'mapa' ) {
+        shareOpts.text = 'Mapa';
+        shareOpts.url  = `https://www.google.com/maps/@${ lat },${ lng },15z`;
+    }
+    if (navigator.share){
+        navigator.share(shareOpts)
+        .then(() => console.log('Successful share'))
+        .catch((error) => console.log('Error sharing', error));
+
+    }else{
+        console.log("Tu navegador no soporta ");
+    }
+
+});
+
+```
