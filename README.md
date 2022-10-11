@@ -75,7 +75,7 @@ Importer.
 - Cuando nuestra pagina realiza una petición a la WWW pasa por nustro archivo JS (Service Worker) y decide lo que podemos realizar con conexión o sin conexion 
 - Debe estar siempre bajo un protocolo HTTPS
 - Forma Operacional -> si nos conectamos a la web pasa por el **service worker**  esta valida si existe el elemento en su localstorage si existe la muestra en la web si no se conecta a la web la baja la guarda en local y la muestra. 
-- El service worker inicia con el `navigator.serviceWirker.register(/sw.js)`
+- El service worker inicia con el `navigator.serviceWirker.register(./sw.js)`
 - El **SW** Corre en hilos independientes si cierras tu pagina que estas consultando este no se termina sigue escuchando para estar listo de nuevo para tu web 
 - Ciclo de Vida, Instalando -> Instalado -> Activación -> activado -> Ocioso 
 ![SW](./info/ciclo_sw.png)
